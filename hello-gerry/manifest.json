@@ -1,0 +1,6 @@
+{
+  "name": "hello-gerry",
+  "short_name": "hello-gerry",
+  "start_url": "/",
+  "display": "standalone"
+}

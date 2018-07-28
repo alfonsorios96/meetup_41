@@ -1,0 +1,6 @@
+{
+  "name": "hello-aldo",
+  "short_name": "hello-aldo",
+  "start_url": "/",
+  "display": "standalone"
+}

@@ -1,0 +1,112 @@
+<link rel="import" href="../../bower_components/polymer/polymer-element.html">
+<link rel="import" href="../../bower_components/polymer/lib/elements/dom-if.html">
+<link rel="import" href="../../bower_components/polymer/lib/elements/dom-repeat.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="./item-card.html">
+
+<dom-module id="hello-aldo-app">
+    <template>
+        <style>
+            .title{
+                width: 100%;
+                height: 6%;
+                margin: 0px;
+            }
+            .container{
+                width: 100%;
+                height: 94%;
+                overflow-y: scroll;
+                overflow-x: hidden;
+                display: flex;
+                justify-content: space-between;
+            }
+            .container::-webkit-scrollbar-track{
+                background-color: #F4F4F4;
+                border-radius: 3px;
+            }
+            .container::-webkit-scrollbar{
+                width: 3px;
+                background-color: #F4F4F4;
+            }
+            .container::-webkit-scrollbar-thumb{
+                border-radius: 3px;
+                background-color: #000000;
+            }
+        </style>
+        <template is="dom-if" if="[[logged]]">
+            <paper-button on-click="logout">LogOut</paper-button>
+            <h2 class="title">[[title]]</h2>
+            <div class="container">
+                <template is="dom-repeat" items="[[contacts]]" as="contact">
+                    <item-card contact="[[contact]]"></item-card>
+                </template>
+            </div>
+        </template>
+        <template is="dom-if" if="[[!logged]]">
+            <h2>Login form</h2>
+            <paper-button on-click="login">LogIn</paper-button>
+        </template>
+    </template>
+
+    <script>
+      /**
+       * @customElement
+       * @polymer
+       */
+      class HelloAldoApp extends ReduxMixin(Polymer.Element) {
+        static get is() {
+          return 'hello-aldo-app';
+        }
+
+        static get properties() {
+          return {
+            logged: {
+              type: Boolean,
+              statePath: 'session.isLogged'
+            },
+            contacts: {
+              type: Array,
+              value: []
+            }
+          };
+        }
+
+        connectedCallback() {
+          super.connectedCallback();
+          const state = this.getState();
+
+          const url = 'https://randomuser.me/api/?results=10';
+          fetch(url)
+            .then(request => {
+              return request.json();
+            })
+            .then(data => {
+              this.set('contacts', data.results);
+            })
+            .catch(error => {
+              console.log('Bad request loaded.');
+            });
+        }
+
+        login() {
+          this.dispatch(
+            {
+              type: 'CHANGE_LOGGED',
+              logged: true,
+            }
+          );
+        }
+
+        logout() {
+          this.dispatch(
+            {
+              type: 'CHANGE_LOGGED',
+              logged: false,
+            }
+          );
+        }
+      }
+
+      window.customElements.define(HelloAldoApp.is, HelloAldoApp);
+    </script>
+</dom-module>
